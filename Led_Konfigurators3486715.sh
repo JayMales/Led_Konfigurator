@@ -40,7 +40,10 @@ task3(){
 	echo
 	task5 $ledName
 }
+inputTest(){
+	return true; if ![[ $1 =~ ^-?[0-9]+$ ]] && [$1 <= $2]; then false
 
+}
 names=`$leds && ls`
 
 echo "Welcome to Led_Konfigurator!
@@ -51,8 +54,17 @@ for name in $names
 do
 	counter
 	echo $count $name
-	task3 $name
+	#task3 $name
 done
 counter
 echo $count "Quit"
 echo "Please enter a number (1-$count):for the led to configure or quit:"
+read input
+vaild = inputTest $input $count
+if vaild
+then
+	arry=($names)
+	echo $(arry[input])
+else
+	echo fail
+fi
