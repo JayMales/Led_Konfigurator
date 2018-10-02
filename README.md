@@ -1,7 +1,7 @@
 # Led_Konfigurator
 
 ### Made by:
-Jay Males\n
+Jay Males
 s3486715
 
 ### Notes:
