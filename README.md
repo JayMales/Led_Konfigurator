@@ -10,7 +10,7 @@ Unless you are superuser, this script will not be able to edit the leds
 
 ### Usage:
 ```
-chmod +x ./Led_Konfigurator
+chmod +x Led_Konfigurator
 sudo ./Led_Konfigurator
 ```
 
