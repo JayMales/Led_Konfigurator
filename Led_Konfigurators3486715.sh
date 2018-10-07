@@ -19,6 +19,7 @@ COUNT=0
 INPUT=0
 VAILD=true
 CURRENTSELECT=""
+PROCESS=""
 
 # This is basically an incrementor for the variable counter 
 # could also be written as let count++ 
@@ -67,7 +68,63 @@ menuPrinter(){
 		echo
 	done
 }
-
+# Uses PS to find processes running, It makes sure it is vaild. If there any many
+# processes with the same name, it prints a list and gets the user to pick.
+# If empty goes back to other menu. If name was incomplete, then checks if that is the actual
+# process you want. 
+psSorta(){
+	PROCESS=$INPUT
+	SAVEIFS=$IFS
+	IFS=$'\n'
+	# ps -e (all users) -o (allows you to pick columns) --no-headers (clears headers) and sorts by names
+	# grep searches for the input 
+	# awk !a[$0]++ removes all doubles then prints the remainder of the output
+	PSUNSORTEDSTRING="`ps -eo comm --no-headers --sort comm | grep "$INPUT" | awk '!a[$0]++ {printf "%s\n", $1}'` "
+	PSUNSORTED=($PSUNSORTEDSTRING)
+	IFS=$SAVEIFS
+	if [[ "${#PSUNSORTED[@]}" -gt 1 ]]; then
+		TITLE=("Name Conflict" "-------------" 
+		"I have detected a name conflict. Do you want to monitor: ")
+		OPTIONS=("${PSUNSORTED[@]}" "Cancel Request")
+		menuPrinter TITLE[@] OPTIONS[@]
+		PROCESS=$INPUT
+	elif [[ "${PSUNSORTED[0]}" == " " ]]; then
+		echo -e "$PROCESS was not found, please try again\n"
+		VAILD=false
+	elif [[ ${PSUNSORTED[0]} != $INPUT ]]; then
+		TITLE=("Correct Process?" "-------------"
+		"Did you mean: ${PSUNSORTED[0]}")
+		OPTIONS=("Yes" "No")
+		menuPrinter TITLE[@] OPTIONS[@]
+		if [[ $INPUT -eq 1 ]]; then VAILD=true; PROCESS=$INPUT; else VAILD=false; 
+			echo -e "Okay, well $PROCESS was not found, please try again\n"; fi
+	else
+		VAILD=true
+		echo
+	fi
+}
+# Isn't done yet but it will be for spawning the script
+spawnScript(){
+	echo "spawned"
+}
+# Gets input from user to work out what process they want to track
+# After sending input to psSorta, it has one last menu before spawning the script
+task6(){
+	echo "Associate LED with the performance of a process"
+	echo "------------------------------------------------"
+	echo -n "Please enter the name of the program to monitor(partial names are ok): "
+	read INPUT
+	if [[ $INPUT == "" ]];then VAILD=false; echo; else
+		echo
+		psSorta
+	fi
+	if $VAILD; then
+		TITLE=("Do you wish to:")
+		OPTIONS=("Monitor memory" "Monitor cpu" "Cancel Request")
+		menuPrinter TITLE[@] OPTIONS[@]
+		if [[ $INPUT -ne 3 ]];then spawnScript; fi
+	fi
+}
 # Gets the triggers file for the led you have picked. Then creates array to send to menu printer
 # After getting the input is back it sets the led to the appropriate setting.
 task5(){
@@ -81,7 +138,7 @@ task5(){
 	menuPrinter TITLE[@] OPTIONS[@]
 	if [[ "$INPUT" != "$COUNT" ]];then 
 		CURRTRIGGER=${THETRIGGERSARRAY[$INPUT-1]}
-		SETTHIS=`$LEDS/$CURRENTSELECT/ && sudo echo $CURRTRIGGER >trigger`
+		SETTHIS=`$LEDS/$CURRENTSELECT/ && echo $CURRTRIGGER >trigger`
 		echo -e $CURRTRIGGER" is now enabled for "$CURRENTSELECT"\n"
 	fi
 }
@@ -98,18 +155,18 @@ task3(){
 		if [[ "$INPUT" == "$COUNT" ]];then break; fi
 		case $INPUT in
 			1)
-				TURN_ON=`$LEDS/$CURRENTSELECT/ && sudo echo "1" >brightness`
+				TURN_ON=`$LEDS/$CURRENTSELECT/ && echo "1" >brightness`
 				echo -e $CURRENTSELECT" is now on!\n"
 				;;
 			2)
-				TURN_OFF=`$LEDS/$CURRENTSELECT/ && sudo echo "0" >brightness`
+				TURN_OFF=`$LEDS/$CURRENTSELECT/ && echo "0" >brightness`
 				echo -e $CURRENTSELECT" is now off!\n"
 				;;
 			3)
 				task5
 				;;
 			4)
-				echo -e "This is done yet\n"
+				task6
 				;;
 			5) 
 				echo -e "This is done yet\n"
@@ -137,5 +194,5 @@ task2(){
 		task3
 	done
 }
-
+#trap '' 2 
 task2
