@@ -60,8 +60,8 @@ menuPrinter(){
 		done
 		
 		printf '%s\n' "${PRINTER[@]}"|"$MORE"
-		printf "Please enter a number (1-$COUNT) for the option to configure: "
-		read INPUT
+		printf "Please enter a number (1-%d) for the option to configure: " $COUNT
+		read -r INPUT
 		inputTest
 		if $VAILD;then END=true; else END=false; 
 			echo " Invaild input, Please try again"; fi
@@ -91,7 +91,7 @@ psSorta(){
 	elif [[ "${PSUNSORTED[0]}" == " " ]]; then
 		echo -e "$PROCESS was not found, please try again\n"
 		VAILD=false
-	elif [[ ${PSUNSORTED[0]} != $INPUT ]]; then
+	elif [[ ${PSUNSORTED[0]} != "$INPUT" ]]; then
 		TITLE=("Correct Process?" "-------------"
 		"Did you mean: ${PSUNSORTED[0]}")
 		OPTIONS=("Yes" "No")
@@ -113,8 +113,8 @@ task6(){
 	echo "Associate LED with the performance of a process"
 	echo "------------------------------------------------"
 	echo -n "Please enter the name of the program to monitor(partial names are ok): "
-	read INPUT
-	if [[ $INPUT == "" ]];then VAILD=false; echo; else
+	read -r INPUT
+	if [[ "$INPUT" == "" ]];then VAILD=false; echo; else
 		echo
 		psSorta
 	fi
@@ -129,7 +129,7 @@ task6(){
 # After getting the input is back it sets the led to the appropriate setting.
 task5(){
 	# I used sed to clean up the cat output. It replaces spaces with \n, [ with nothing, ] with * then turns it into an array
-	THETRIGGERS=`$LEDS/$CURRENTSELECT/ && cat trigger | sed -e 's/\s/ \n/g;s/\[//g;s/\]/\*/g' |tr "\n" " "`
+	THETRIGGERS=$($LEDS/$CURRENTSELECT/ && cat trigger | sed -e 's/\s/ \n/g;s/\[//g;s/\]/\*/g' |tr "\n" " ")
 	THETRIGGERSARRAY=($THETRIGGERS)
 	TITLE=("Associate Led with a system Event"
 		"================================="
@@ -138,8 +138,8 @@ task5(){
 	menuPrinter TITLE[@] OPTIONS[@]
 	if [[ "$INPUT" != "$COUNT" ]];then 
 		CURRTRIGGER=${THETRIGGERSARRAY[$INPUT-1]}
-		SETTHIS=`$LEDS/$CURRENTSELECT/ && echo $CURRTRIGGER >trigger`
-		echo -e $CURRTRIGGER" is now enabled for "$CURRENTSELECT"\n"
+		$($LEDS/$CURRENTSELECT/ && echo $CURRTRIGGER >trigger)
+		echo -e "$CURRTRIGGER is now enabled for $CURRENTSELECT\n"
 	fi
 }
 
@@ -147,7 +147,7 @@ task5(){
 # Or sends you to the next menu. 
 task3(){	
 	while :;do
-		TITLE=($CURRENTSELECT "==========")
+		TITLE=("$CURRENTSELECT" "==========")
 		OPTIONS=("Turn on" "Turn off" "Associate with a system event" 
 		"Associate with the performance of a process" 
 		"Stop association with a process’ performance" "Quit to main menu")
@@ -155,12 +155,12 @@ task3(){
 		if [[ "$INPUT" == "$COUNT" ]];then break; fi
 		case $INPUT in
 			1)
-				TURN_ON=`$LEDS/$CURRENTSELECT/ && echo "1" >brightness`
-				echo -e $CURRENTSELECT" is now on!\n"
+				`$LEDS/$CURRENTSELECT/ && echo "1" >brightness`
+				echo -e "$CURRENTSELECT is now on!\n"
 				;;
 			2)
-				TURN_OFF=`$LEDS/$CURRENTSELECT/ && echo "0" >brightness`
-				echo -e $CURRENTSELECT" is now off!\n"
+				`$LEDS/$CURRENTSELECT/ && echo "0" >brightness`
+				echo -e "$CURRENTSELECT is now off!\n"
 				;;
 			3)
 				task5
@@ -180,7 +180,7 @@ task3(){
 task2(){
 	reset
 	while :;do
-		NAMES=(`$LEDS && ls`)
+		NAMES=($($LEDS && ls))
 		TITLE=("Welcome to Led_Konfigurator!" 
 		"============================" "Please select an led to configure: ")
 		OPTIONS=("${NAMES[@]}" "Quit")
