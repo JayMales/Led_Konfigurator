@@ -1,16 +1,16 @@
 #!/bin/bash
 
-#############################################
-#											#
-#			Led Konfigurator				#
-#				Made by						#
-#		  Jay Males - s3486715              #
-# 											#
-#	This script allows a user to edit what  #
-#	  the leds to on their pi/keyboard.		#
-#	This program was written for COSC1133	#
-#											#
-#############################################
+######################################################
+#						     #
+#		    Led Konfigurator	     	     #
+#			Made by		             #
+#		  Jay Males - s3486715               #
+# 						     #
+#	This script allows a user to edit what       #
+#	  the leds to on their pi/keyboard.	     #
+#	This program was written for COSC1133	     #
+#						     #
+######################################################
 
 # Global variables used throughtout the code 
 LEDS="cd /sys/class/leds"
