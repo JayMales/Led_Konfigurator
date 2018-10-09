@@ -10,7 +10,7 @@ Unless you are superuser, this script will not be able to edit the leds
 
 ### Usage:
 ```
-chmod +x Led_Konfigurator.sh
+chmod +x Led_Konfigurator.sh spawnMe.sh
 sudo ./Led_Konfigurator.sh
 ```
 
