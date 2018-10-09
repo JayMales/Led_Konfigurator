@@ -87,7 +87,7 @@ psSorta(){
 		"I have detected a name conflict. Do you want to monitor: ")
 		OPTIONS=("${PSUNSORTED[@]}" "Cancel Request")
 		menuPrinter TITLE[@] OPTIONS[@]
-		PROCESS=$INPUT
+		PROCESS=${PSUNSORTED[$INPUT-1]}
 	elif [[ "${PSUNSORTED[0]}" == " " ]]; then
 		echo -e "$PROCESS was not found, please try again\n"
 		VAILD=false
@@ -96,7 +96,7 @@ psSorta(){
 		"Did you mean: ${PSUNSORTED[0]}")
 		OPTIONS=("Yes" "No")
 		menuPrinter TITLE[@] OPTIONS[@]
-		if [[ $INPUT -eq 1 ]]; then VAILD=true; PROCESS=$INPUT; else VAILD=false; 
+		if [[ $INPUT -eq 1 ]]; then VAILD=true; PROCESS=${PSUNSORTED[$INPUT-1]}; else VAILD=false; 
 			echo -e "Okay, well $PROCESS was not found, please try again\n"; fi
 	else
 		VAILD=true
@@ -106,6 +106,10 @@ psSorta(){
 # Isn't done yet but it will be for spawning the script
 spawnScript(){
 	echo "spawned"
+	CPURAM=""
+	if [[ "$INPUT" == "1" ]];then CPURAM="mem"; else CPURAM="cpu"; fi
+	echo 
+	./spawnMe.sh $CURRENTSELECT $PROCESS $CPURAM &
 }
 # Gets input from user to work out what process they want to track
 # After sending input to psSorta, it has one last menu before spawning the script
@@ -115,7 +119,7 @@ task6(){
 	echo -n "Please enter the name of the program to monitor(partial names are ok): "
 	read -r INPUT
 	if [[ "$INPUT" == "" ]];then VAILD=false; echo; else
-		echo
+		echo 
 		psSorta
 	fi
 	if $VAILD; then
