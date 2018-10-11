@@ -11,10 +11,10 @@ checkPS(){
 	PSUNSORTEDSTRING="`ps -eo comm,%$CPURAM --no-headers --sort comm| grep $PROCESS | awk '{sum+=$NF} END {printf "%s %s\n" ,$1,sum}'`"
 	PSUNSORTED=($PSUNSORTEDSTRING)
 	USAGE=${PSUNSORTED[-1]}
-	# This finds the usage out of 100% then +1 so no div from 0. Then divided by 100 so I get 0-10 input. 
-	# It then -11 from that so 1 becomes -10 and 10 becomes -1. Then finally times by -1 which makes it a pos number again
+	# This finds the usage out of 100% then +1 so no div from 0. Then divided by 100 so I get 0.0-1.0 input. 
+	# It then -1.1 from that so 0.1 becomes -1.0 and 10 becomes -0.1. Then finally times by -1 which makes it a pos number again
 	# So if it is under full load, it will flash every 0.1 seconds and under 10% load it will flash every second (on and off) 
-	USAGE=`bc <<< "((($USAGE+1)/100 -11)* -1)/10"`
+	USAGE=`bc <<< "((($USAGE+1)/100 -1.1)* -1)"`
 	`$LEDS/$CURRENTSELECT/ && echo "1" >brightness`
 	sleep 0.2
 	`$LEDS/$CURRENTSELECT/ && echo "0" >brightness`
