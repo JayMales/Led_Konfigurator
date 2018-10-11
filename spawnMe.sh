@@ -24,7 +24,7 @@ checkPS(){
 # just loops the checkPS function
 keepMeALive(){
 	while :; do
-		checkPS
+		checkPS || sleep 2
 	done
 }
 
